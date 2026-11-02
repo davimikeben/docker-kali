@@ -1,1 +1,49 @@
+name: CI
 
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validar scripts e configuracao
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validar sintaxe dos scripts shell
+        run: |
+          for f in scripts/*.sh; do
+            echo "== bash -n $f"
+            bash -n "$f"
+          done
+
+      - name: Validar JSON do devcontainer
+        run: |
+          python3 -c "import json,re; s=open('.devcontainer/devcontainer.json').read(); s=re.sub(r'^\s*//.*$','',s,flags=re.M); json.loads(s); print('devcontainer.json OK')"
+
+      - name: Validar compose.yml
+        run: docker compose -f compose.yml config >/dev/null && echo "compose.yml OK"
+
+  build:
+    name: Construir imagem (sem ferramentas)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build (KALI_TOOLS vazio para ser rapido)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          build-args: |
+            KALI_TOOLS=
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

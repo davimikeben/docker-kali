@@ -1,0 +1,28 @@
+# Arquivos de configuração locais
+.env
+.env.local
+docker-compose.override.yml
+compose.override.yml
+
+# Pasta compartilhada (mantém só o README)
+shared/*
+!shared/README.md
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+**/node_modules/
+**/dist/
