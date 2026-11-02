@@ -1,0 +1,56 @@
+{
+  // Configuração do GitHub Codespaces / VS Code Dev Containers.
+  // Constrói a imagem Kali a partir do Dockerfile na raiz do repositório.
+  "name": "Kali Linux Sandbox",
+
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    // Personalize o conjunto de ferramentas Kali aqui.
+    // Ex.: "kali-linux-headless", "kali-linux-large" ou "" (sem ferramentas).
+    "args": {
+      "KALI_TOOLS": "kali-tools-top10",
+      "USERNAME": "kali"
+    }
+  },
+
+  // Usuário sem privilégios, com sudo sem senha.
+  "remoteUser": "kali",
+  "containerUser": "kali",
+
+  // Docker dentro do Codespace (permite rodar outros contêineres).
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  // Portas do desktop: noVNC (navegador) e VNC (cliente nativo).
+  "forwardPorts": [6080, 5901],
+  "portsAttributes": {
+    "6080": {
+      "label": "noVNC (desktop no navegador)",
+      "onAutoForward": "notify"
+    },
+    "5901": {
+      "label": "VNC (cliente nativo)",
+      "onAutoForward": "silent"
+    }
+  },
+
+  // Sobe o desktop ao criar e ao reiniciar o Codespace.
+  "postCreateCommand": "bash scripts/vnc-start.sh",
+  "postStartCommand": "bash scripts/vnc-start.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "timonwong.shellcheck",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n"
+      }
+    }
+  }
+}
